@@ -22,12 +22,29 @@ describe('state', () => {
         expect(state.foo).toBe(42);
     });
 
+    it('returns an empty object if store was created without arguments', () => {
+        var store = new TrueStore();
+        expect(store.state()).toEqual({});
+    });
+
     it('does not compute changes in the state copy', () => {
         var store = new TrueStore({foo: 42});
         var state1 = store.state();
         state1.foo = 45;
         var state2 = store.state();
         expect(state2.foo).toBe(42);
+    });
+
+    it('does not allow nested state values to be written outside actions', () => {
+        var store = new TrueStore({
+            users: [
+                {id: 1, name: 'John'}
+            ]
+        });
+        var state1 = store.state();
+        state1.users[0].name = 'Jane';
+        var state2 = store.state();
+        expect(state2.users[0].name).toBe('John');
     });
 });
 

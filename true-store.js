@@ -4,20 +4,21 @@ const Immutable = require('immutable');
 class TrueStore {
 
     constructor(initialState) {
-        this.currentState = Immutable.Map(initialState);
+        initialState = initialState || {};
+        this.currentState = Immutable.fromJS(initialState);
     }
 
     state() {
-        return this.currentState.toObject();
+        return this.currentState.toJS();
     }
 
     action(name, func) {
         var self = this;
         this.validateActionArguments(name, func);
-        var newStateObject = this.currentState.toObject();
+        var newStateObject = this.currentState.toJS();
         var newFunc = function() {
             func.apply(this, arguments);
-            self.currentState = Immutable.Map(newStateObject);;
+            self.currentState = Immutable.fromJS(newStateObject);;
         };
         return newFunc.bind(newStateObject);
     }
