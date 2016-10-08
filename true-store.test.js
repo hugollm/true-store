@@ -194,3 +194,77 @@ describe('unlistenData', () => {
         }).toThrow();
     });
 });
+
+describe('listenAction', () => {
+
+    it('executes a callback when observed action gets executed', () => {
+        var store = new TrueStore();
+        var action = store.action('fooAction', function() {});
+        var callback = jest.fn();
+        store.listenAction('fooAction', callback);
+        action();
+        expect(callback).toHaveBeenCalled();
+    });
+
+    it('can execute two callbacks when observed action gets executed', () => {
+        var store = new TrueStore();
+        var action = store.action('fooAction', function() {});
+        var callback1 = jest.fn();
+        var callback2 = jest.fn();
+        store.listenAction('fooAction', callback1);
+        store.listenAction('fooAction', callback2);
+        action();
+        expect(callback1).toHaveBeenCalled();
+        expect(callback2).toHaveBeenCalled();
+    });
+
+    it('does not execute the callback when unobserved action gets executed', () => {
+        var store = new TrueStore();
+        var fooAction = store.action('fooAction', function() {});
+        var barAction = store.action('barAction', function() {});
+        var callback = jest.fn();
+        store.listenAction('barAction', callback);
+        fooAction();
+        expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('allow actions to be listened before declaration', () => {
+        var store = new TrueStore();
+        var callback = jest.fn();
+        expect(() => {
+            store.listenAction('fooAction', callback);
+        }).not.toThrow();
+    });
+});
+
+describe('unlistenAction', () => {
+
+    it('prevents previously registered callback from executing', () => {
+        var store = new TrueStore();
+        var action = store.action('fooAction', function() {});
+        var callback = jest.fn();
+        store.listenAction('fooAction', callback);
+        store.unlistenAction('fooAction', callback);
+        action();
+        expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('throws an error if trying to unlisten an unregistered callback', () => {
+        var store = new TrueStore();
+        var action = store.action('fooAction', function() {});
+        var callback = jest.fn();
+        expect(() => {
+            store.unlistenAction('fooAction', callback);
+        }).toThrow();
+    });
+
+    it('throws an error if trying to unlisten a callback registered for other key', () => {
+        var store = new TrueStore();
+        var action = store.action('fooAction', function() {});
+        var callback = jest.fn();
+        store.listenAction('fooAction', callback);
+        expect(() => {
+            store.unlistenAction('barAction', callback);
+        }).toThrow();
+    });
+});

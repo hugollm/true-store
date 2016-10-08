@@ -7,6 +7,7 @@ class TrueStore {
         initialState = initialState || {};
         this.currentStateMap = Immutable.fromJS(initialState);
         this.dataListeners = {};
+        this.actionListeners = {};
     }
 
     state() {
@@ -22,6 +23,7 @@ class TrueStore {
             var oldStateMap = self.currentStateMap;
             self.currentStateMap = Immutable.fromJS(newStateObject);
             self.executeDataListeners(oldStateMap, self.currentStateMap);
+            self.executeActionListeners(name);
         };
         return newFunc.bind(newStateObject);
     }
@@ -50,6 +52,19 @@ class TrueStore {
         this.dataListeners[key].splice(index, 1);
     }
 
+    listenAction(name, callback) {
+        this.actionListeners[name] = this.actionListeners[name] || [];
+        this.actionListeners[name].push(callback);
+    }
+
+    unlistenAction(name, callback) {
+        this.actionListeners[name] = this.actionListeners[name] || [];
+        var index = this.actionListeners[name].indexOf(callback);
+        if (index == -1)
+            throw 'TrueStore.unlistenAction: action "' + name + '" is not registered.';
+        this.actionListeners[name].splice(index, 1);
+    }
+
     executeDataListeners(oldMap, newMap) {
         for (var key in this.dataListeners)
             this.dataListeners[key].map((callback) => {
@@ -57,6 +72,14 @@ class TrueStore {
                 var oldValue = oldMap.getIn(pathArray);
                 var newValue = newMap.getIn(pathArray);
                 if (!Immutable.is(oldValue, newValue))
+                    callback();
+            });
+    }
+
+    executeActionListeners(actionName) {
+        for (var name in this.actionListeners)
+            this.actionListeners[name].map((callback) => {
+                if (name == actionName)
                     callback();
             });
     }
