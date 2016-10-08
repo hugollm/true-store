@@ -89,7 +89,7 @@ describe('action', () => {
     });
 });
 
-describe('listen', () => {
+describe('listenData', () => {
 
     it('executes a callback when observed data changes', () => {
         var store = new TrueStore({foo: 42});
@@ -97,7 +97,7 @@ describe('listen', () => {
             this.foo = 'bar';
         });
         var callback = jest.fn();
-        store.listen('foo', callback);
+        store.listenData('foo', callback);
         action();
         expect(callback).toHaveBeenCalled();
     });
@@ -109,8 +109,8 @@ describe('listen', () => {
         });
         var callback1 = jest.fn();
         var callback2 = jest.fn();
-        store.listen('foo', callback1);
-        store.listen('foo', callback2);
+        store.listenData('foo', callback1);
+        store.listenData('foo', callback2);
         action();
         expect(callback1).toHaveBeenCalled();
         expect(callback2).toHaveBeenCalled();
@@ -126,7 +126,7 @@ describe('listen', () => {
             this.database.users[0].name = 'Jane';
         });
         var callback = jest.fn();
-        store.listen('database.users', callback);
+        store.listenData('database.users', callback);
         action();
         expect(callback).toHaveBeenCalled();
     });
@@ -135,7 +135,7 @@ describe('listen', () => {
         var store = new TrueStore();
         var action = store.action('fooAction', function(value) {});
         var callback = jest.fn();
-        store.listen('foo', callback);
+        store.listenData('foo', callback);
         action();
         expect(callback).not.toHaveBeenCalled();
     });
@@ -146,7 +146,7 @@ describe('listen', () => {
             this.foo = value;
         });
         var callback = jest.fn();
-        store.listen('bar', callback);
+        store.listenData('bar', callback);
         action('bar');
         expect(callback).not.toHaveBeenCalled();
     });
@@ -157,13 +157,13 @@ describe('listen', () => {
             this.foo = 42;
         });
         var callback = jest.fn();
-        store.listen('foo', callback);
+        store.listenData('foo', callback);
         action();
         expect(callback).not.toHaveBeenCalled();
     });
 });
 
-describe('unlisten', () => {
+describe('unlistenData', () => {
 
     it('prevents previously registered callback from executing', () => {
         var store = new TrueStore({foo: 42});
@@ -171,8 +171,8 @@ describe('unlisten', () => {
             this.foo = 'bar';
         });
         var callback = jest.fn();
-        store.listen('foo', callback);
-        store.unlisten('foo', callback);
+        store.listenData('foo', callback);
+        store.unlistenData('foo', callback);
         action();
         expect(callback).not.toHaveBeenCalled();
     });
@@ -181,16 +181,16 @@ describe('unlisten', () => {
         var store = new TrueStore();
         var callback = jest.fn();
         expect(() => {
-            store.unlisten('foo', callback);
+            store.unlistenData('foo', callback);
         }).toThrow();
     });
 
     it('throws an error if trying to unlisten a callback registered for other key', () => {
         var store = new TrueStore();
         var callback = jest.fn();
-        store.listen('foo', callback);
+        store.listenData('foo', callback);
         expect(() => {
-            store.unlisten('bar', callback);
+            store.unlistenData('bar', callback);
         }).toThrow();
     });
 });

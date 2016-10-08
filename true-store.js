@@ -37,16 +37,16 @@ class TrueStore {
         }
     }
 
-    listen(key, callback) {
+    listenData(key, callback) {
         this.dataListeners[key] = this.dataListeners[key] || [];
         this.dataListeners[key].push(callback);
     }
 
-    unlisten(key, callback) {
+    unlistenData(key, callback) {
         this.dataListeners[key] = this.dataListeners[key] || [];
         var index = this.dataListeners[key].indexOf(callback);
         if (index == -1)
-            throw 'TrueStore.unlisten: key "' + key + '" is not registered.';
+            throw 'TrueStore.unlistenData: key "' + key + '" is not registered.';
         this.dataListeners[key].splice(index, 1);
     }
 
