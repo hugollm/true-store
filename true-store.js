@@ -6,7 +6,7 @@ class TrueStore {
     constructor(initialState) {
         initialState = initialState || {};
         this.currentStateMap = Immutable.fromJS(initialState);
-        this.dataListeners = [];
+        this.dataListeners = {};
     }
 
     state() {
@@ -38,17 +38,27 @@ class TrueStore {
     }
 
     listen(key, callback) {
-        var path = key.split('.');
-        this.dataListeners.push({path: path, callback: callback});
+        this.dataListeners[key] = this.dataListeners[key] || [];
+        this.dataListeners[key].push(callback);
+    }
+
+    unlisten(key, callback) {
+        this.dataListeners[key] = this.dataListeners[key] || [];
+        var index = this.dataListeners[key].indexOf(callback);
+        if (index == -1)
+            throw 'TrueStore.unlisten: key "' + key + '" is not registered.';
+        this.dataListeners[key].splice(index, 1);
     }
 
     executeDataListeners(oldMap, newMap) {
-        this.dataListeners.map((listener) => {
-            var oldValue = oldMap.getIn(listener.path);
-            var newValue = newMap.getIn(listener.path);
-            if (!Immutable.is(oldValue, newValue))
-                listener.callback();
-        });
+        for (var key in this.dataListeners)
+            this.dataListeners[key].map((callback) => {
+                var pathArray = key.split('.');
+                var oldValue = oldMap.getIn(pathArray);
+                var newValue = newMap.getIn(pathArray);
+                if (!Immutable.is(oldValue, newValue))
+                    callback();
+            });
     }
 }
 

@@ -162,3 +162,35 @@ describe('listen', () => {
         expect(callback).not.toHaveBeenCalled();
     });
 });
+
+describe('unlisten', () => {
+
+    it('prevents previously registered callback from executing', () => {
+        var store = new TrueStore({foo: 42});
+        var action = store.action('fooAction', function() {
+            this.foo = 'bar';
+        });
+        var callback = jest.fn();
+        store.listen('foo', callback);
+        store.unlisten('foo', callback);
+        action();
+        expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('throws an error if trying to unlisten an unregistered callback', () => {
+        var store = new TrueStore();
+        var callback = jest.fn();
+        expect(() => {
+            store.unlisten('foo', callback);
+        }).toThrow();
+    });
+
+    it('throws an error if trying to unlisten a callback registered for other key', () => {
+        var store = new TrueStore();
+        var callback = jest.fn();
+        store.listen('foo', callback);
+        expect(() => {
+            store.unlisten('bar', callback);
+        }).toThrow();
+    });
+});
