@@ -5,20 +5,23 @@ class TrueStore {
 
     constructor(initialState) {
         initialState = initialState || {};
-        this.currentState = Immutable.fromJS(initialState);
+        this.currentStateMap = Immutable.fromJS(initialState);
+        this.dataListeners = [];
     }
 
     state() {
-        return this.currentState.toJS();
+        return this.currentStateMap.toJS();
     }
 
     action(name, func) {
         var self = this;
         this.validateActionArguments(name, func);
-        var newStateObject = this.currentState.toJS();
+        var newStateObject = this.currentStateMap.toJS();
         var newFunc = function() {
             func.apply(this, arguments);
-            self.currentState = Immutable.fromJS(newStateObject);;
+            var oldStateMap = self.currentStateMap;
+            self.currentStateMap = Immutable.fromJS(newStateObject);
+            self.executeDataListeners(oldStateMap, self.currentStateMap);
         };
         return newFunc.bind(newStateObject);
     }
@@ -32,6 +35,20 @@ class TrueStore {
         catch(e) {
             throw Error('TrueStore.action: cannot create action with arrow function. Use regular functions instead.');
         }
+    }
+
+    listen(key, callback) {
+        var path = key.split('.');
+        this.dataListeners.push({path: path, callback: callback});
+    }
+
+    executeDataListeners(oldMap, newMap) {
+        this.dataListeners.map((listener) => {
+            var oldValue = oldMap.getIn(listener.path);
+            var newValue = newMap.getIn(listener.path);
+            if (!Immutable.is(oldValue, newValue))
+                listener.callback();
+        });
     }
 }
 

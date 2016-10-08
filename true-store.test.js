@@ -88,3 +88,77 @@ describe('action', () => {
         expect(store.state()).toEqual({foo: 'bar'});
     });
 });
+
+describe('listen', () => {
+
+    it('executes a callback when observed data changes', () => {
+        var store = new TrueStore({foo: 42});
+        var action = store.action('fooAction', function() {
+            this.foo = 'bar';
+        });
+        var callback = jest.fn();
+        store.listen('foo', callback);
+        action();
+        expect(callback).toHaveBeenCalled();
+    });
+
+    it('can execute two callbacks when observed data changes', () => {
+        var store = new TrueStore({foo: 42});
+        var action = store.action('fooAction', function() {
+            this.foo = 'bar';
+        });
+        var callback1 = jest.fn();
+        var callback2 = jest.fn();
+        store.listen('foo', callback1);
+        store.listen('foo', callback2);
+        action();
+        expect(callback1).toHaveBeenCalled();
+        expect(callback2).toHaveBeenCalled();
+    });
+
+    it('executes a callback when nested observed data changes', () => {
+        var store = new TrueStore({
+            database: {
+                users: [{id: 1, name: 'John'}]
+            }
+        });
+        var action = store.action('fooAction', function() {
+            this.database.users[0].name = 'Jane';
+        });
+        var callback = jest.fn();
+        store.listen('database.users', callback);
+        action();
+        expect(callback).toHaveBeenCalled();
+    });
+
+    it('does not execute the callback if nothing changes', () => {
+        var store = new TrueStore();
+        var action = store.action('fooAction', function(value) {});
+        var callback = jest.fn();
+        store.listen('foo', callback);
+        action();
+        expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('does not execute the callback if unobserved data changes', () => {
+        var store = new TrueStore({foo: 42});
+        var action = store.action('fooAction', function(value) {
+            this.foo = value;
+        });
+        var callback = jest.fn();
+        store.listen('bar', callback);
+        action('bar');
+        expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('does not execute the callback if data changes to the same value', () => {
+        var store = new TrueStore({foo: 42});
+        var action = store.action('fooAction', function() {
+            this.foo = 42;
+        });
+        var callback = jest.fn();
+        store.listen('foo', callback);
+        action();
+        expect(callback).not.toHaveBeenCalled();
+    });
+});
