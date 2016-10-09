@@ -302,3 +302,39 @@ describe('unlistenAction', () => {
         }).toThrow();
     });
 });
+
+describe('debug', () => {
+
+    beforeEach(() => {
+        console.originalLog = console.log;
+        console.log = jest.fn();
+    });
+
+    afterEach(() => {
+        console.log = console.originalLog;
+    });
+
+    it('logs the action names and arguments if turned on', () => {
+        var store = new TrueStore();
+        store.debug = true;
+        var action = store.action('fooAction', function(bar) {});
+        action('bar');
+        expect(console.log).toHaveBeenCalled();
+        expect(console.log.mock.calls.length).toBe(1);
+        expect(console.log.mock.calls[0][0]).toBe('fooAction');
+        expect(console.log.mock.calls[0][1][0]).toBe('bar');
+    });
+
+    it('does not log anything when turned off', () => {
+        var store = new TrueStore();
+        store.debug = false;
+        var action = store.action('fooAction', function(bar) {});
+        action('bar');
+        expect(console.log).not.toHaveBeenCalled();
+    });
+
+    it('starts turned off', () => {
+        var store = new TrueStore();
+        expect(store.debug).toBe(false);
+    });
+});

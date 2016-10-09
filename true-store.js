@@ -8,6 +8,7 @@ class TrueStore {
         this.currentStateMap = Immutable.fromJS(initialState);
         this.dataListeners = {};
         this.actionListeners = {};
+        this.debug = false;
     }
 
     state() {
@@ -27,6 +28,8 @@ class TrueStore {
         this.validateActionArguments(name, func);
         var newStateObject = this.currentStateMap.toJS();
         var newFunc = function() {
+            if (self.debug)
+                console.log(name, arguments);
             func.apply(this, arguments);
             var oldStateMap = self.currentStateMap;
             self.currentStateMap = Immutable.fromJS(newStateObject);
