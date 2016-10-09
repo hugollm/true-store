@@ -6,6 +6,7 @@ class TrueStore {
     constructor(initialState) {
         initialState = initialState || {};
         this.currentStateMap = Immutable.fromJS(initialState);
+        this.registeredActionNames = [];
         this.dataListeners = {};
         this.actionListeners = {};
         this.debug = false;
@@ -26,6 +27,7 @@ class TrueStore {
     action(name, func) {
         var self = this;
         this.validateActionArguments(name, func);
+        this.registeredActionNames.push(name);
         var newStateObject = this.currentStateMap.toJS();
         var newFunc = function() {
             if (self.debug)
@@ -40,8 +42,12 @@ class TrueStore {
     }
 
     validateActionArguments(name, func) {
-        if (!name || typeof(name) != 'string') throw Error('TrueStore.action: invalid argument "name".');
-        if (!func || typeof(func) != 'function') throw Error('TrueStore.action: invalid argument "func".');
+        if (!name || typeof(name) != 'string')
+            throw Error('TrueStore.action: invalid argument "name".');
+        if (!func || typeof(func) != 'function')
+            throw Error('TrueStore.action: invalid argument "func".');
+        if (this.registeredActionNames.indexOf(name) !== -1)
+            throw Error('TrueStore.action: duplicate action name "' + name + '"');
         try {
             func.arguments;
         }

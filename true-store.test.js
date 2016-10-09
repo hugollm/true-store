@@ -121,6 +121,14 @@ describe('action', () => {
         action('bar');
         expect(store.state()).toEqual({foo: 'bar'});
     });
+
+    it('cannot register two actions with the same name', () => {
+        var store = new TrueStore();
+        store.action('fooAction', function() {});
+        expect(() => {
+            store.action('fooAction', function() {});
+        }).toThrow();
+    });
 });
 
 describe('listenData', () => {
