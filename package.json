@@ -4,7 +4,8 @@
   "description": "Simple state management",
   "main": "true-store.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "watch-tests": "jest --watchAll"
   },
   "author": "Hugo Mota",
   "license": "MIT",
