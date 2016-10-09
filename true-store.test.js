@@ -48,6 +48,40 @@ describe('state', () => {
     });
 });
 
+describe('get', () => {
+
+    it('returns a portion of the state', () => {
+        var store = new TrueStore({foo: 42});
+        var foo = store.get('foo');
+        expect(foo).toBe(42);
+    });
+
+    it('returns undefined if unknown key is requested', () => {
+        var store = new TrueStore({foo: 42});
+        var bar = store.get('bar');
+        expect(bar).toBe(undefined);
+    });
+
+    it('can return nested data', () => {
+        var store = new TrueStore({
+            login: {
+                loading: false,
+                user: {id: 1, name: 'John'},
+            }
+        });
+        var name = store.get('login.user.name');
+        expect(name).toEqual('John');
+    });
+
+    it('return plain objects from state', () => {
+        var store = new TrueStore({
+            user: {id: 1, name: 'John'},
+        });
+        var user = store.get('user');
+        expect(user.name).toBe('John');
+    });
+});
+
 describe('action', () => {
 
     it('creates a new function', () => {

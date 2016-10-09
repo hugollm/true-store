@@ -14,6 +14,14 @@ class TrueStore {
         return this.currentStateMap.toJS();
     }
 
+    get(key) {
+        var pathArray = key.split('.');
+        var value = this.currentStateMap.getIn(pathArray);
+        if (typeof(value) == 'object' && typeof(value.toJS) == 'function')
+            value = value.toJS();
+        return value;
+    }
+
     action(name, func) {
         var self = this;
         this.validateActionArguments(name, func);
