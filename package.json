@@ -1,8 +1,8 @@
 {
   "name": "true-store",
-  "version": "1.0.0",
-  "description": "Simple state management",
-  "main": "true-store.js",
+  "version": "0.0.0",
+  "description": "Simple state management for javascript applications",
+  "main": "src/true-store.js",
   "scripts": {
     "test": "jest",
     "watch-tests": "jest --watchAll"
