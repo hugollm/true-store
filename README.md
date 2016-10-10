@@ -18,6 +18,10 @@ True Store limit state changes to named structures called "actions". Outside of 
 
 Note: for the sake of simplicity, the examples in this README uses jQuery for requests. You are free to use whatever you like.
 
+Install the library:
+
+    npm install true-store
+
 Make an instance of the store with an initial state:
 
 ```javascript
