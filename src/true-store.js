@@ -48,12 +48,6 @@ class TrueStore {
             throw Error('TrueStore.action: invalid argument "func".');
         if (this.registeredActionNames.indexOf(name) !== -1)
             throw Error('TrueStore.action: duplicate action name "' + name + '"');
-        try {
-            func.arguments;
-        }
-        catch(e) {
-            throw Error('TrueStore.action: cannot create action with arrow function. Use regular functions instead.');
-        }
     }
 
     listenData(key, callback) {

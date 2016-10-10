@@ -1,6 +1,6 @@
 {
   "name": "true-store",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Simple state management for javascript applications",
   "main": "src/true-store.js",
   "scripts": {

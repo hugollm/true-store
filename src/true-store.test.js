@@ -106,13 +106,6 @@ describe('action', () => {
         }).toThrow();
     });
 
-    it('cannot be created with arrow function', () => {
-        var store = new TrueStore();
-        expect(() => {
-            var action = store.action('actionName', () => {});
-        }).toThrow();
-    });
-
     it('can change the store state', () => {
         var store = new TrueStore({foo: 42});
         var action = store.action('fooAction', function(value) {
