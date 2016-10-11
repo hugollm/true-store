@@ -39,21 +39,21 @@ var store = new TrueStore({
 Create some actions:
 
 ```javascript
-const requestLogin = store.action('requestLogin', function(email, password) {
-    this.login.loading = true;
+const requestLogin = store.action('requestLogin', (state, email, password) => {
+    state.login.loading = true;
     var request = $.post('/login', {email: email, password: password});
     request.done(loginOk);
     request.fail(loginError);
 });
 
-const loginOk = store.action('loginOk', function(response) {
-    this.login.loading = false;
-    this.login.user = response.user;
+const loginOk = store.action('loginOk', (state, response) => {
+    state.login.loading = false;
+    state.login.user = response.user;
 });
 
-const loginError = store.action('loginError', function(response) {
-    this.login.loading = false;
-    this.login.error = response.error;
+const loginError = store.action('loginError', (state, response) => {
+    state.login.loading = false;
+    state.login.error = response.error;
 });
 ```
 
