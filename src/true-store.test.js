@@ -108,8 +108,8 @@ describe('action', () => {
 
     it('can change the store state', () => {
         var store = new TrueStore({foo: 42});
-        var action = store.action('fooAction', function(value) {
-            this.foo = value;
+        var action = store.action('fooAction', function(state, value) {
+            state.foo = value;
         });
         action('bar');
         expect(store.state()).toEqual({foo: 'bar'});
@@ -122,14 +122,23 @@ describe('action', () => {
             store.action('fooAction', function() {});
         }).toThrow();
     });
+
+    it('works with arrow functions', () => {
+        var store = new TrueStore({foo: 42});
+        var action = store.action('fooAction', (state, value) => {
+            state.foo = value;
+        });
+        action('bar');
+        expect(store.state()).toEqual({foo: 'bar'});
+    });
 });
 
 describe('listenData', () => {
 
     it('executes a callback when observed data changes', () => {
         var store = new TrueStore({foo: 42});
-        var action = store.action('fooAction', function() {
-            this.foo = 'bar';
+        var action = store.action('fooAction', function(state) {
+            state.foo = 'bar';
         });
         var callback = jest.fn();
         store.listenData('foo', callback);
@@ -139,8 +148,8 @@ describe('listenData', () => {
 
     it('can execute two callbacks when observed data changes', () => {
         var store = new TrueStore({foo: 42});
-        var action = store.action('fooAction', function() {
-            this.foo = 'bar';
+        var action = store.action('fooAction', function(state) {
+            state.foo = 'bar';
         });
         var callback1 = jest.fn();
         var callback2 = jest.fn();
@@ -157,8 +166,8 @@ describe('listenData', () => {
                 users: [{id: 1, name: 'John'}]
             }
         });
-        var action = store.action('fooAction', function() {
-            this.database.users[0].name = 'Jane';
+        var action = store.action('fooAction', function(state) {
+            state.database.users[0].name = 'Jane';
         });
         var callback = jest.fn();
         store.listenData('database.users', callback);
@@ -168,7 +177,7 @@ describe('listenData', () => {
 
     it('does not execute the callback if nothing changes', () => {
         var store = new TrueStore();
-        var action = store.action('fooAction', function(value) {});
+        var action = store.action('fooAction', function() {});
         var callback = jest.fn();
         store.listenData('foo', callback);
         action();
@@ -177,19 +186,19 @@ describe('listenData', () => {
 
     it('does not execute the callback if unobserved data changes', () => {
         var store = new TrueStore({foo: 42});
-        var action = store.action('fooAction', function(value) {
-            this.foo = value;
+        var action = store.action('fooAction', function(state) {
+            state.foo = 'bar';
         });
         var callback = jest.fn();
         store.listenData('bar', callback);
-        action('bar');
+        action();
         expect(callback).not.toHaveBeenCalled();
     });
 
     it('does not execute the callback if data changes to the same value', () => {
         var store = new TrueStore({foo: 42});
-        var action = store.action('fooAction', function() {
-            this.foo = 42;
+        var action = store.action('fooAction', function(state) {
+            state.foo = 42;
         });
         var callback = jest.fn();
         store.listenData('foo', callback);
@@ -202,8 +211,8 @@ describe('unlistenData', () => {
 
     it('prevents previously registered callback from executing', () => {
         var store = new TrueStore({foo: 42});
-        var action = store.action('fooAction', function() {
-            this.foo = 'bar';
+        var action = store.action('fooAction', function(state) {
+            state.foo = 'bar';
         });
         var callback = jest.fn();
         store.listenData('foo', callback);
@@ -318,7 +327,7 @@ describe('debug', () => {
     it('logs the action names and arguments if turned on', () => {
         var store = new TrueStore();
         store.debug = true;
-        var action = store.action('fooAction', function(bar) {});
+        var action = store.action('fooAction', function(state, bar) {});
         action('bar');
         expect(console.log).toHaveBeenCalled();
         expect(console.log.mock.calls.length).toBe(1);
