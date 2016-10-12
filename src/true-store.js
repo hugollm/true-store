@@ -28,11 +28,11 @@ class TrueStore {
         var self = this;
         this.validateActionArguments(name, func);
         this.registeredActionNames.push(name);
-        var newStateObject = this.currentStateMap.toJS();
-        var newFunc = function() {
+        return function() {
             if (self.debug)
                 console.log(name, arguments);
             var args = (arguments.length === 1 ? [arguments[0]] : Array.apply(null, arguments));
+            var newStateObject = self.currentStateMap.toJS();
             args.unshift(newStateObject);
             func.apply(null, args);
             var oldStateMap = self.currentStateMap;
@@ -40,7 +40,6 @@ class TrueStore {
             self.executeDataListeners(oldStateMap, self.currentStateMap);
             self.executeActionListeners(name);
         };
-        return newFunc.bind(newStateObject);
     }
 
     validateActionArguments(name, func) {

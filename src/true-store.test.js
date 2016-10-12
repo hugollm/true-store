@@ -155,6 +155,19 @@ describe('action', () => {
         action('bar');
         expect(store.state()).toEqual({foo: 'bar'});
     });
+
+    it('persists data changes through multiple actions', () => {
+        var store = new TrueStore({foo: null, bar: null});
+        var fooAction = store.action('fooAction', (state) => {
+            state.foo = 'foo';
+        });
+        var barAction = store.action('barAction', (state) => {
+            state.bar = 'bar';
+        });
+        fooAction();
+        barAction();
+        expect(store.state()).toEqual({foo: 'foo', bar: 'bar'});
+    });
 });
 
 describe('listenData', () => {
