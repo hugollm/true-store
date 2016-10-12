@@ -73,6 +73,30 @@ describe('get', () => {
         expect(name).toEqual('John');
     });
 
+    it('can return null data', () => {
+        var store = new TrueStore({
+            user: null,
+        });
+        var user = store.get('user');
+        expect(user).toBeNull();
+    });
+
+    it('can return false data', () => {
+        var store = new TrueStore({
+            logged: false,
+        });
+        var logged = store.get('logged');
+        expect(logged === false).toBeTruthy();
+    });
+
+    it('can return undefined data', () => {
+        var store = new TrueStore({
+            und: undefined,
+        });
+        var und = store.get('und');
+        expect(und).toBeUndefined();
+    });
+
     it('return plain objects from state', () => {
         var store = new TrueStore({
             user: {id: 1, name: 'John'},

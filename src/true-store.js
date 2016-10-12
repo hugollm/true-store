@@ -19,7 +19,7 @@ class TrueStore {
     get(key) {
         var pathArray = key.split('.');
         var value = this.currentStateMap.getIn(pathArray);
-        if (typeof(value) == 'object' && typeof(value.toJS) == 'function')
+        if (value !== null && typeof(value) == 'object' && typeof(value.toJS) == 'function')
             value = value.toJS();
         return value;
     }
