@@ -369,7 +369,7 @@ describe('debug', () => {
         expect(console.log).toHaveBeenCalled();
         expect(console.log.mock.calls.length).toBe(1);
         expect(console.log.mock.calls[0][0]).toBe('fooAction');
-        expect(console.log.mock.calls[0][1][0]).toBe('bar');
+        expect(console.log.mock.calls[0][1]).toContain('bar');
     });
 
     it('does not log anything when turned off', () => {
