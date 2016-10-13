@@ -16,6 +16,7 @@
     "immutable": "^3.8.1"
   },
   "jest": {
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "verbose": false
   }
 }
