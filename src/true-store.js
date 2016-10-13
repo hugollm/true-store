@@ -6,6 +6,7 @@ class TrueStore {
     constructor(initialState) {
         initialState = initialState || {};
         this.currentStateMap = Immutable.fromJS(initialState);
+        this.nextStateObject = initialState;
         this.registeredActionNames = [];
         this.dataListeners = {};
         this.actionListeners = {};
@@ -32,11 +33,10 @@ class TrueStore {
             var args = self.argumentsToArray(arguments);
             if (self.debug)
                 console.log(name, args);
-            var newStateObject = self.currentStateMap.toJS();
-            args.unshift(newStateObject);
+            args.unshift(self.nextStateObject);
             func.apply(null, args);
             var oldStateMap = self.currentStateMap;
-            self.currentStateMap = Immutable.fromJS(newStateObject);
+            self.currentStateMap = Immutable.fromJS(self.nextStateObject);
             self.executeDataListeners(oldStateMap, self.currentStateMap);
             self.executeActionListeners(name);
         };

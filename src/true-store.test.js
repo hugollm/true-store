@@ -168,6 +168,20 @@ describe('action', () => {
         barAction();
         expect(store.state()).toEqual({foo: 'foo', bar: 'bar'});
     });
+
+    it('persists data changes through chained/nested actions', () => {
+        var store = new TrueStore({foo: null, bar: null});
+        store.debug = true;
+        var fooAction = store.action('fooAction', (state, name) => {
+            state.foo = name;
+            barAction('bar');
+        });
+        var barAction = store.action('barAction', (state, name) => {
+            state.bar = name;
+        });
+        fooAction('foo');
+        expect(store.state()).toEqual({foo: 'foo', bar: 'bar'});
+    });
 });
 
 describe('listenData', () => {
@@ -241,6 +255,22 @@ describe('listenData', () => {
         store.listenData('foo', callback);
         action();
         expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('does not execute callback twice in chained actions', () => {
+        var store = new TrueStore({foo: null});
+        var fooAction = store.action('fooAction', function(state) {
+            state.foo = 'foo';
+            barAction();
+        });
+        var barAction = store.action('barAction', function(state) {
+            state.foo = 'bar';
+        });
+        var callback = jest.fn();
+        store.listenData('foo', callback);
+        fooAction();
+        expect(callback).toHaveBeenCalled();
+        expect(callback.mock.calls.length).toEqual(1);
     });
 });
 
