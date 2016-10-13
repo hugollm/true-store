@@ -32,7 +32,7 @@ class TrueStore {
         return function() {
             var args = self.argumentsToArray(arguments);
             if (self.debug)
-                console.log(name, args);
+                console.log(name, Immutable.fromJS(args).toJS());
             args.unshift(self.nextStateObject);
             func.apply(null, args);
             var oldStateMap = self.currentStateMap;
