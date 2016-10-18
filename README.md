@@ -4,6 +4,8 @@ Simple state management for javascript applications.
 
 If you are overwhelmed by flux/redux/etc, this library might be perfect for you. It is inspired by them, but with a VERY simplified API.
 
+![true story](https://s-media-cache-ak0.pinimg.com/236x/c7/3f/18/c73f18942a51478f34db359cdf6c9f91.jpg)
+
 
 ## Quick introduction to state management
 
@@ -118,3 +120,12 @@ Note that you have to `unlistenData` before the component is unmounted. This is 
 Also note how the reference to the method used to update has to be the same in both `listenData` and `unlistenData` methods. That's why the binding to this is happening in the constructor.
 
 You can make use of a base component to further simplify the process.
+
+
+## Example
+
+You can find a small example of the library in action here:
+
+https://github.com/hugollm/true-store-example
+
+It's just a simple login/logout example with some pages on a dashboard. Should be useful if you find yourself asking how this thing really works.
