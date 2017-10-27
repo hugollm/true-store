@@ -25,6 +25,13 @@ class TrueStore {
         return value;
     }
 
+    set(key, value) {
+        var pathArray = key.split('.');
+        var oldStateMap = this.currentStateMap;
+        this.currentStateMap = this.currentStateMap.setIn(pathArray, Immutable.fromJS(value));
+        this.executeDataListeners(oldStateMap, this.currentStateMap);
+    }
+
     action(name, func) {
         var self = this;
         this.validateActionArguments(name, func);
