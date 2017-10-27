@@ -1,5 +1,4 @@
-const TrueStore = require('./true-store');
-
+const TrueStore = require('../src/true-store');
 
 describe('constructor', () => {
 
