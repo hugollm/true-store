@@ -14,12 +14,14 @@
     "main": "src/true-store.js",
     "scripts": {
         "test": "jest --coverage",
-        "watch-tests": "jest --coverage --watchAll"
+        "watch-tests": "jest --coverage --watchAll",
+        "coveralls": "cat coverage/lcov.info | coveralls"
     },
     "dependencies": {
         "immutable": "^3.8.2"
     },
     "devDependencies": {
+        "coveralls": "^3.0.0",
         "jest": "^21.2.1"
     },
     "jest": {
