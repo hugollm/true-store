@@ -1,7 +1,7 @@
 {
     "name": "true-store",
-    "version": "0.1.5",
-    "description": "Simple state management for javascript applications",
+    "version": "0.2.0",
+    "description": "Dead simple state management for javascript applications.",
     "license": "MIT",
     "author": {
         "name": "Hugo Mota",
