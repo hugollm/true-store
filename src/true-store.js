@@ -5,7 +5,7 @@ class TrueStore {
 
     constructor(initialState) {
         this.currentStateMap = Immutable.fromJS(initialState || {});
-        this.dataListeners = {};
+        this.listeners = {};
     }
 
     get(key) {
@@ -20,25 +20,25 @@ class TrueStore {
         var pathArray = key.split('.');
         var oldStateMap = this.currentStateMap;
         this.currentStateMap = this.currentStateMap.setIn(pathArray, Immutable.fromJS(value));
-        this.executeDataListeners(oldStateMap, this.currentStateMap);
+        this.executeListeners(oldStateMap, this.currentStateMap);
     }
 
-    listenData(key, callback) {
-        this.dataListeners[key] = this.dataListeners[key] || [];
-        this.dataListeners[key].push(callback);
+    listen(key, callback) {
+        this.listeners[key] = this.listeners[key] || [];
+        this.listeners[key].push(callback);
     }
 
-    unlistenData(key, callback) {
-        this.dataListeners[key] = this.dataListeners[key] || [];
-        var index = this.dataListeners[key].indexOf(callback);
+    unlisten(key, callback) {
+        this.listeners[key] = this.listeners[key] || [];
+        var index = this.listeners[key].indexOf(callback);
         if (index == -1)
-            throw 'TrueStore.unlistenData: key "' + key + '" is not registered.';
-        this.dataListeners[key].splice(index, 1);
+            throw 'TrueStore.unlisten: key "' + key + '" is not registered.';
+        this.listeners[key].splice(index, 1);
     }
 
-    executeDataListeners(oldMap, newMap) {
-        for (var key in this.dataListeners)
-            this.dataListeners[key].map((callback) => {
+    executeListeners(oldMap, newMap) {
+        for (var key in this.listeners)
+            this.listeners[key].map((callback) => {
                 var pathArray = key.split('.');
                 var oldValue = oldMap.getIn(pathArray);
                 var newValue = newMap.getIn(pathArray);
