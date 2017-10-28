@@ -5,6 +5,7 @@ class TrueStore {
 
     constructor(initialState) {
         this.currentStateMap = Immutable.fromJS(initialState || {});
+        this.observers = [];
         this.listeners = {};
         this.transactionDepth = 0;
     }
@@ -36,6 +37,13 @@ class TrueStore {
             this.executeListeners(oldStateMap, this.currentStateMap);
     }
 
+    observer(callback, keys = []) {
+        keys = Array.isArray(keys) ? keys : [keys];
+        var observer = new TrueStoreObserver(this, callback, keys);
+        this.observers.push(observer);
+        return observer;
+    }
+
     listen(key, callback) {
         this.listeners[key] = this.listeners[key] || [];
         this.listeners[key].push(callback);
@@ -49,7 +57,14 @@ class TrueStore {
         this.listeners[key].splice(index, 1);
     }
 
+    notifyObservers(oldMap, newMap) {
+        this.observers.map((observer) => {
+            observer.callIfNeeded(oldMap, newMap);
+        });
+    }
+
     executeListeners(oldMap, newMap) {
+        this.notifyObservers(oldMap, newMap);
         for (var key in this.listeners)
             this.listeners[key].map((callback) => {
                 var pathArray = key.split('.');
@@ -58,6 +73,38 @@ class TrueStore {
                 if (!Immutable.is(oldValue, newValue))
                     callback();
             });
+    }
+}
+
+
+class TrueStoreObserver {
+
+    constructor(store, callback, keys = []) {
+        this.store = store;
+        this.callback = callback;
+        this.keys = keys;
+    }
+
+    release() {
+        var index = this.store.observers.indexOf(this);
+        this.store.observers.splice(index, 1);
+    }
+
+    callIfNeeded(oldMap, newMap) {
+        if (this.keys.length === 0 && !Immutable.is(oldMap, newMap))
+            this.callback();
+        if (this.keys.length > 0)
+            this.keys.map(key => {
+                if (this.stateKeyChanged(key, oldMap, newMap))
+                    this.callback();
+            });
+    }
+
+    stateKeyChanged(key, oldMap, newMap) {
+        var pathArray = key.split('.');
+        var oldValue = oldMap.getIn(pathArray);
+        var newValue = newMap.getIn(pathArray);
+        return !Immutable.is(oldValue, newValue);
     }
 }
 
