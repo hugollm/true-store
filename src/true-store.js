@@ -6,7 +6,6 @@ class TrueStore {
     constructor(initialState) {
         this.currentStateMap = Immutable.fromJS(initialState || {});
         this.observers = [];
-        this.listeners = {};
         this.transactionDepth = 0;
     }
 
@@ -25,7 +24,7 @@ class TrueStore {
         var oldStateMap = this.currentStateMap;
         this.currentStateMap = this.currentStateMap.setIn(pathArray, Immutable.fromJS(value));
         if (this.transactionDepth === 0)
-            this.executeListeners(oldStateMap, this.currentStateMap);
+            this.notifyObservers(oldStateMap, this.currentStateMap);
     }
 
     transaction(fn) {
@@ -34,7 +33,7 @@ class TrueStore {
         fn();
         this.transactionDepth--;
         if (this.transactionDepth === 0)
-            this.executeListeners(oldStateMap, this.currentStateMap);
+            this.notifyObservers(oldStateMap, this.currentStateMap);
     }
 
     observer(callback, keys = []) {
@@ -44,35 +43,10 @@ class TrueStore {
         return observer;
     }
 
-    listen(key, callback) {
-        this.listeners[key] = this.listeners[key] || [];
-        this.listeners[key].push(callback);
-    }
-
-    unlisten(key, callback) {
-        this.listeners[key] = this.listeners[key] || [];
-        var index = this.listeners[key].indexOf(callback);
-        if (index == -1)
-            throw 'TrueStore.unlisten: key "' + key + '" is not registered.';
-        this.listeners[key].splice(index, 1);
-    }
-
     notifyObservers(oldMap, newMap) {
         this.observers.map((observer) => {
             observer.callIfNeeded(oldMap, newMap);
         });
-    }
-
-    executeListeners(oldMap, newMap) {
-        this.notifyObservers(oldMap, newMap);
-        for (var key in this.listeners)
-            this.listeners[key].map((callback) => {
-                var pathArray = key.split('.');
-                var oldValue = oldMap.getIn(pathArray);
-                var newValue = newMap.getIn(pathArray);
-                if (!Immutable.is(oldValue, newValue))
-                    callback();
-            });
     }
 }
 

@@ -101,7 +101,7 @@ describe('set', () => {
     it('triggers data listeners', () => {
         var store = new TrueStore({foo: null});
         callback = jest.fn();
-        store.listen('foo', callback);
+        store.observer(callback, 'foo');
         store.set('foo', 'bar');
         expect(callback).toHaveBeenCalled();
     });
@@ -109,7 +109,7 @@ describe('set', () => {
     it('triggers data listeners from nested changes', () => {
         var store = new TrueStore({foo: {bar: null}});
         callback = jest.fn();
-        store.listen('foo', callback);
+        store.observer(callback, 'foo');
         store.set('foo.bar', 42);
         expect(callback).toHaveBeenCalled();
     });
@@ -120,7 +120,7 @@ describe('transaction', () => {
     it('prevents listeners from running multiple times inside the transaction', () => {
         var store = new TrueStore({foo: 42});
         callback = jest.fn();
-        store.listen('foo', callback);
+        store.observer(callback, 'foo');
         store.transaction(() => {
             store.set('foo', 43);
             store.set('foo', 44);
@@ -132,7 +132,7 @@ describe('transaction', () => {
     it('prevents listener calls inside nest transactions', () => {
         var store = new TrueStore({foo: 42});
         callback = jest.fn();
-        store.listen('foo', callback);
+        store.observer(callback, 'foo');
         store.transaction(() => {
             store.set('foo', 43);
             store.transaction(() => {
@@ -209,84 +209,5 @@ describe('observer', () => {
         store.set('foo', 'bar');
         expect(callback1).not.toHaveBeenCalled();
         expect(callback2).toHaveBeenCalled();
-    });
-});
-
-describe('listen', () => {
-
-    it('executes a callback when observed data changes', () => {
-        var store = new TrueStore({foo: 42});
-        var callback = jest.fn();
-        store.listen('foo', callback);
-        store.set('foo', 'bar');
-        expect(callback).toHaveBeenCalled();
-    });
-
-    it('can execute two callbacks when observed data changes', () => {
-        var store = new TrueStore({foo: 42});
-        var callback1 = jest.fn();
-        var callback2 = jest.fn();
-        store.listen('foo', callback1);
-        store.listen('foo', callback2);
-        store.set('foo', 'bar');
-        expect(callback1).toHaveBeenCalled();
-        expect(callback2).toHaveBeenCalled();
-    });
-
-    it('executes a callback when nested observed data changes', () => {
-        var store = new TrueStore({
-            database: {
-                users: [{id: 1, name: 'John'}]
-            }
-        });
-        var callback = jest.fn();
-        store.listen('database.users', callback);
-        store.set('database.users.0.name', 'Jane');
-        expect(callback).toHaveBeenCalled();
-    });
-
-    it('does not execute the callback if unobserved data changes', () => {
-        var store = new TrueStore({foo: 42, bar: 42});
-        var callback = jest.fn();
-        store.listen('bar', callback);
-        store.set('foo', 43);
-        expect(callback).not.toHaveBeenCalled();
-    });
-
-    it('does not execute the callback if data changes to the same value', () => {
-        var store = new TrueStore({foo: 42});
-        var callback = jest.fn();
-        store.listen('foo', callback);
-        store.set('foo', 42);
-        expect(callback).not.toHaveBeenCalled();
-    });
-});
-
-describe('unlisten', () => {
-
-    it('prevents previously registered callback from executing', () => {
-        var store = new TrueStore({foo: 42});
-        var callback = jest.fn();
-        store.listen('foo', callback);
-        store.unlisten('foo', callback);
-        store.set('foo', 'bar');
-        expect(callback).not.toHaveBeenCalled();
-    });
-
-    it('throws an error if trying to unlisten an unregistered callback', () => {
-        var store = new TrueStore();
-        var callback = jest.fn();
-        expect(() => {
-            store.unlisten('foo', callback);
-        }).toThrow();
-    });
-
-    it('throws an error if trying to unlisten a callback registered for other key', () => {
-        var store = new TrueStore();
-        var callback = jest.fn();
-        store.listen('foo', callback);
-        expect(() => {
-            store.unlisten('bar', callback);
-        }).toThrow();
     });
 });
