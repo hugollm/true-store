@@ -1,29 +1,29 @@
 {
-  "name": "true-store",
-  "version": "0.1.5",
-  "description": "Simple state management for javascript applications",
-  "license": "MIT",
-  "author": {
-    "name": "Hugo Mota",
-    "url": "https://github.com/hugollm"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/hugollm/true-store.git"
-  },
-  "main": "src/true-store.js",
-  "scripts": {
-    "test": "jest",
-    "watch-tests": "jest --watchAll"
-  },
-  "dependencies": {
-    "immutable": "^3.8.2"
-  },
-  "devDependencies": {
-    "jest": "^21.2.1"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "verbose": false
-  }
+    "name": "true-store",
+    "version": "0.1.5",
+    "description": "Simple state management for javascript applications",
+    "license": "MIT",
+    "author": {
+        "name": "Hugo Mota",
+        "url": "https://github.com/hugollm"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/hugollm/true-store.git"
+    },
+    "main": "src/true-store.js",
+    "scripts": {
+        "test": "jest",
+        "watch-tests": "jest --watchAll"
+    },
+    "dependencies": {
+        "immutable": "^3.8.2"
+    },
+    "devDependencies": {
+        "jest": "^21.2.1"
+    },
+    "jest": {
+        "testEnvironment": "node",
+        "verbose": false
+    }
 }
