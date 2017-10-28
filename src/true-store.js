@@ -3,19 +3,19 @@ const Immutable = require('immutable');
 
 class TrueStore {
 
-    constructor(initialState) {
-        this.currentStateMap = Immutable.fromJS(initialState || {});
+    constructor(initialState = {}) {
+        this.stateMap = Immutable.fromJS(initialState);
         this.observers = [];
         this.transactionDepth = 0;
     }
 
-    get(key) {
-        if (key === undefined)
-            return this.currentStateMap.toJS();
+    get(key = null) {
+        if (key === null)
+            return this.stateMap.toJS();
         if (typeof(key) !== 'string')
             throw Error('TrueStore.get: key must be string.');
         var pathArray = key.split('.');
-        var value = this.currentStateMap.getIn(pathArray);
+        var value = this.stateMap.getIn(pathArray);
         if (value !== null && typeof(value) == 'object' && typeof(value.toJS) == 'function')
             value = value.toJS();
         return value;
@@ -25,19 +25,19 @@ class TrueStore {
         if (typeof(key) !== 'string')
             throw Error('TrueStore.set: key must be string.');
         var pathArray = key.split('.');
-        var oldStateMap = this.currentStateMap;
-        this.currentStateMap = this.currentStateMap.setIn(pathArray, Immutable.fromJS(value));
+        var oldStateMap = this.stateMap;
+        this.stateMap = this.stateMap.setIn(pathArray, Immutable.fromJS(value));
         if (this.transactionDepth === 0)
-            this.notifyObservers(oldStateMap, this.currentStateMap);
+            this.notifyObservers(oldStateMap, this.stateMap);
     }
 
     transaction(callback) {
-        var oldStateMap = this.currentStateMap;
+        var oldStateMap = this.stateMap;
         this.transactionDepth++;
         callback();
         this.transactionDepth--;
         if (this.transactionDepth === 0)
-            this.notifyObservers(oldStateMap, this.currentStateMap);
+            this.notifyObservers(oldStateMap, this.stateMap);
     }
 
     observer(callback, keys = []) {
