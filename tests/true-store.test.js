@@ -137,6 +137,13 @@ describe('set', () => {
             store.set(42, true);
         }).toThrow('TrueStore.set: key must be string.');
     });
+
+    it('creates object structure if unknown nested key is set', () => {
+        var store = new TrueStore();
+        store.set('foo.bar.biz', 42);
+        expect(store.get('foo.bar.biz')).toBe(42);
+        expect(store.get('foo')).toEqual({bar: {biz: 42}});
+    });
 });
 
 describe('transaction', () => {
