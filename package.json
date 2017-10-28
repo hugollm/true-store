@@ -13,8 +13,8 @@
     },
     "main": "src/true-store.js",
     "scripts": {
-        "test": "jest",
-        "watch-tests": "jest --watchAll"
+        "test": "jest --coverage",
+        "watch-tests": "jest --coverage --watchAll"
     },
     "dependencies": {
         "immutable": "^3.8.2"
