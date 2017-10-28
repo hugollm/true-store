@@ -15,7 +15,13 @@ describe('constructor', () => {
 
 describe('get', () => {
 
-    it('returns a portion of the state', () => {
+    it('returns the entire state if called without arguments', () => {
+        var store = new TrueStore({foo: 42});
+        var state = store.get();
+        expect(state).toEqual({foo: 42});
+    });
+
+    it('can return a portion of the state', () => {
         var store = new TrueStore({foo: 42});
         var foo = store.get('foo');
         expect(foo).toBe(42);
