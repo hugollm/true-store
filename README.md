@@ -1,4 +1,4 @@
-# True Store
+# TrueStore
 
 Dead simple state management for javascript applications.
 
@@ -17,36 +17,12 @@ TrueStore is available on npm:
 TrueStore provides a simple store with observer capabilities. It also gives you copies of your state
 when you ask for values, avoiding undesired mutation bugs.
 
-Here's a simple example that cover the basics:
-
-```javascript
-import TrueStore from 'true-store';
-
-// initial state is optional
-var store = new TrueStore({ loading: false });
-
-store.get(); // { loading: false }
-store.get('loading'); // false
-
-store.set('loading', true);
-store.get('loading'); // true
-
-store.observer(() => {
-    console.log('Something changed!');
-    if (store.get('loading'))
-        console.log('Spinner should be spinning...');
-});
-
-store.set('loading', false); // Something changed!
-store.set('loading', true); // Something changed! Spinner should be spinning...
-```
-
-
-## Methods
 
 `constructor`
 
 ```javascript
+import TrueStore from 'true-store';
+
 var store = new TrueStore(); // default state = {}
 var store = new TrueStore({ initial: { state: 42 } });
 ```
