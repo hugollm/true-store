@@ -6,6 +6,7 @@ class TrueStore {
     constructor(initialState) {
         this.currentStateMap = Immutable.fromJS(initialState || {});
         this.listeners = {};
+        this.transactionDepth = 0;
     }
 
     get(key) {
@@ -22,7 +23,17 @@ class TrueStore {
         var pathArray = key.split('.');
         var oldStateMap = this.currentStateMap;
         this.currentStateMap = this.currentStateMap.setIn(pathArray, Immutable.fromJS(value));
-        this.executeListeners(oldStateMap, this.currentStateMap);
+        if (this.transactionDepth === 0)
+            this.executeListeners(oldStateMap, this.currentStateMap);
+    }
+
+    transaction(fn) {
+        var oldStateMap = this.currentStateMap;
+        this.transactionDepth++;
+        fn();
+        this.transactionDepth--;
+        if (this.transactionDepth === 0)
+            this.executeListeners(oldStateMap, this.currentStateMap);
     }
 
     listen(key, callback) {
