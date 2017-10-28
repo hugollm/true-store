@@ -2,6 +2,10 @@
 
 Dead simple state management for javascript applications.
 
+[![npm version](https://badge.fury.io/js/true-store.svg)](https://badge.fury.io/js/true-store)
+[![Build Status](https://travis-ci.org/hugollm/true-store.svg?branch=master)](https://travis-ci.org/hugollm/true-store)
+[![Coverage Status](https://coveralls.io/repos/github/hugollm/true-store/badge.svg?branch=master)](https://coveralls.io/github/hugollm/true-store?branch=master)
+
 ![true story](https://s-media-cache-ak0.pinimg.com/236x/c7/3f/18/c73f18942a51478f34db359cdf6c9f91.jpg)
 
 
