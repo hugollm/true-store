@@ -73,7 +73,24 @@ describe('get', () => {
             user: {id: 1, name: 'John'},
         });
         var user = store.get('user');
-        expect(user.name).toBe('John');
+        expect(user).toEqual({id: 1, name: 'John'});
+    });
+
+    it('returns undefined for keys not present in the store', () => {
+        var store = new TrueStore();
+        expect(store.get('und')).toBe(undefined);
+    });
+
+    it('returns undefined for nested keys not present in the store', () => {
+        var store = new TrueStore();
+        expect(store.get('und.nest.nest')).toBe(undefined);
+    });
+
+    it('throws error if called with invalid key', () => {
+        var store = new TrueStore();
+        expect(() => {
+            store.get(42);
+        }).toThrow('TrueStore.get: key must be string.');
     });
 });
 
@@ -112,6 +129,13 @@ describe('set', () => {
         store.observer(callback, 'foo');
         store.set('foo.bar', 42);
         expect(callback).toHaveBeenCalled();
+    });
+
+    it('throws error if called with invalid key', () => {
+        var store = new TrueStore();
+        expect(() => {
+            store.set(42, true);
+        }).toThrow('TrueStore.set: key must be string.');
     });
 });
 
@@ -209,5 +233,19 @@ describe('observer', () => {
         store.set('foo', 'bar');
         expect(callback1).not.toHaveBeenCalled();
         expect(callback2).toHaveBeenCalled();
+    });
+
+    it('throws exception if called with invalid key', () => {
+        var store = new TrueStore({foo: 42});
+        expect(() => {
+            store.observer(jest.fn(), 42);
+        }).toThrow('TrueStore.observer: keys must be strings.');
+    });
+
+    it('throws exception if one of the keys is invalid', () => {
+        var store = new TrueStore({foo: 42});
+        expect(() => {
+            store.observer(jest.fn(), ['foo', 'bar', 42]);
+        }).toThrow('TrueStore.observer: keys must be strings.');
     });
 });

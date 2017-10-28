@@ -12,6 +12,8 @@ class TrueStore {
     get(key) {
         if (key === undefined)
             return this.currentStateMap.toJS();
+        if (typeof(key) !== 'string')
+            throw Error('TrueStore.get: key must be string.');
         var pathArray = key.split('.');
         var value = this.currentStateMap.getIn(pathArray);
         if (value !== null && typeof(value) == 'object' && typeof(value.toJS) == 'function')
@@ -20,6 +22,8 @@ class TrueStore {
     }
 
     set(key, value) {
+        if (typeof(key) !== 'string')
+            throw Error('TrueStore.set: key must be string.');
         var pathArray = key.split('.');
         var oldStateMap = this.currentStateMap;
         this.currentStateMap = this.currentStateMap.setIn(pathArray, Immutable.fromJS(value));
@@ -38,6 +42,10 @@ class TrueStore {
 
     observer(callback, keys = []) {
         keys = Array.isArray(keys) ? keys : [keys];
+        keys.map((key) => {
+            if (typeof(key) !== 'string')
+                throw Error('TrueStore.observer: keys must be strings.');
+        });
         var observer = new TrueStoreObserver(this, callback, keys);
         this.observers.push(observer);
         return observer;
