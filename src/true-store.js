@@ -61,7 +61,7 @@ class TrueStore {
 
 class TrueStoreObserver {
 
-    constructor(store, callback, keys = []) {
+    constructor(store, callback, keys) {
         this.store = store;
         this.callback = callback;
         this.keys = keys;
