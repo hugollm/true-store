@@ -27,10 +27,10 @@ class TrueStore {
             this.notifyObservers(oldStateMap, this.currentStateMap);
     }
 
-    transaction(fn) {
+    transaction(callback) {
         var oldStateMap = this.currentStateMap;
         this.transactionDepth++;
-        fn();
+        callback();
         this.transactionDepth--;
         if (this.transactionDepth === 0)
             this.notifyObservers(oldStateMap, this.currentStateMap);
