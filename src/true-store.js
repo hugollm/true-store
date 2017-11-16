@@ -31,6 +31,15 @@ class TrueStore {
             this.notifyObservers(oldStateMap, this.stateMap);
     }
 
+    merge(obj) {
+        if (typeof(obj) !== 'object')
+            throw Error('TrueStore.merge: state can only merge with an object.');
+        var oldStateMap = this.stateMap;
+        this.stateMap = this.stateMap.mergeDeep(obj);
+        if (this.transactionDepth === 0)
+            this.notifyObservers(oldStateMap, this.stateMap);
+    }
+
     transaction(callback) {
         var oldStateMap = this.stateMap;
         this.transactionDepth++;
