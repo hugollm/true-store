@@ -4,6 +4,8 @@ const Immutable = require('immutable');
 class TrueStore {
 
     constructor(initialState = {}) {
+        if (typeof(initialState) !== 'object')
+            throw Error('TrueStore: initial state must be an object.');
         this.stateMap = Immutable.fromJS(initialState);
         this.observers = [];
         this.transactionDepth = 0;

@@ -11,6 +11,12 @@ describe('constructor', () => {
         var store = new TrueStore({});
         expect(store).toBeInstanceOf(TrueStore);
     });
+
+    it('only accepts objects as the initial state', () => {
+        expect(() => {
+            var store = new TrueStore(42);
+        }).toThrow('TrueStore: initial state must be an object.');
+    });
 });
 
 describe('get', () => {
