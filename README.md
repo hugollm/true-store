@@ -47,6 +47,13 @@ store.set('initial.state', 43);
 store.set('users', []);
 ```
 
+`merge`
+
+```javascript
+store.merge({ initial: { state: 43 } });
+store.merge({ newValue: 42 });
+```
+
 `observer`
 
 ```javascript
