@@ -21,8 +21,8 @@
         "immutable": "^3.8.2"
     },
     "devDependencies": {
-        "coveralls": "^3.0.0",
-        "jest": "^21.2.1"
+        "coveralls": "^3.0.2",
+        "jest": "^23.5.0"
     },
     "jest": {
         "testEnvironment": "node",
