@@ -17,7 +17,7 @@ describe('merge', () => {
     it('triggers data listeners', () => {
         var store = new TrueStore({foo: 1});
         callback = jest.fn();
-        store.observer(callback);
+        store.observer(null, callback);
         store.merge({foo: 2});
         expect(callback).toHaveBeenCalled();
     });
@@ -25,7 +25,7 @@ describe('merge', () => {
     it('triggers data listeners for new keys', () => {
         var store = new TrueStore({foo: 1});
         callback = jest.fn();
-        store.observer(callback);
+        store.observer(null, callback);
         store.merge({bar: 2});
         expect(callback).toHaveBeenCalled();
     });
@@ -33,7 +33,7 @@ describe('merge', () => {
     it('it respects transactions', () => {
         var store = new TrueStore({foo: 1});
         callback = jest.fn();
-        store.observer(callback);
+        store.observer(null, callback);
         store.transaction(() => {
             store.merge({foo: 2});
             store.merge({foo: 3});

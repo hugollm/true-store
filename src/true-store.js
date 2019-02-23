@@ -51,13 +51,15 @@ class TrueStore {
             this.notifyObservers(oldStateMap, this.stateMap);
     }
 
-    observer(callback, keys = []) {
+    observer(keys, callback) {
+        if (keys === null)
+            keys = [];
         keys = Array.isArray(keys) ? keys : [keys];
         keys.map((key) => {
             if (typeof(key) !== 'string')
                 throw Error('TrueStore.observer: keys must be strings.');
         });
-        var observer = new TrueStoreObserver(this, callback, keys);
+        var observer = new TrueStoreObserver(this, keys, callback);
         this.observers.push(observer);
         return observer;
     }
@@ -72,10 +74,10 @@ class TrueStore {
 
 class TrueStoreObserver {
 
-    constructor(store, callback, keys) {
+    constructor(store, keys, callback) {
         this.store = store;
-        this.callback = callback;
         this.keys = keys;
+        this.callback = callback;
     }
 
     release() {

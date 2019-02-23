@@ -5,7 +5,7 @@ describe('transaction', () => {
     it('prevents listeners from running multiple times inside the transaction', () => {
         var store = new TrueStore({foo: 42});
         callback = jest.fn();
-        store.observer(callback, 'foo');
+        store.observer('foo', callback);
         store.transaction(() => {
             store.set('foo', 43);
             store.set('foo', 44);
@@ -17,7 +17,7 @@ describe('transaction', () => {
     it('prevents listener calls inside nest transactions', () => {
         var store = new TrueStore({foo: 42});
         callback = jest.fn();
-        store.observer(callback, 'foo');
+        store.observer('foo', callback);
         store.transaction(() => {
             store.set('foo', 43);
             store.transaction(() => {
