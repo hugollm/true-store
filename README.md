@@ -1,6 +1,6 @@
 # TrueStore
 
-Dead simple state management for javascript applications.
+Dead simple state management on top of [Immutable.js](https://immutable-js.github.io/immutable-js/).
 
 [![npm version](https://badge.fury.io/js/true-store.svg)](https://badge.fury.io/js/true-store)
 [![Build Status](https://travis-ci.org/hugollm/true-store.svg?branch=master)](https://travis-ci.org/hugollm/true-store)
@@ -13,7 +13,7 @@ Dead simple state management for javascript applications.
 
 TrueStore is available on npm:
 
-    npm install --save true-store
+    npm install true-store
 
 
 ## Overview
@@ -21,58 +21,60 @@ TrueStore is available on npm:
 TrueStore provides a simple store with observer capabilities. It also gives you copies of your state
 when you ask for values, avoiding undesired mutation bugs.
 
+Why you might wanna use it:
 
-`constructor`
+- **Simplicity:** simple `get` and `set` interface. No weird magic going on.
+- **Control:** Thanks to the explicit observers, you always know when your code will update.
+- **Performance:** Since updates are in your control, if you do it right it will be fast. If you do it wrong, you can fix it. Also, thanks to Immutable.js the observers don't need to run if data updates but is equal to the previous value.
+- **Predictability:** Thanks to Immutable.js you won't run into weird mutation bugs. Your data only updates when you call methods like `set` and `merge`. When reading you'll get copies of your data to do as you please.
 
-```javascript
-import TrueStore from 'true-store';
 
-var store = new TrueStore(); // default state = {}
-var store = new TrueStore({ initial: { state: 42 } });
-```
-
-`get`
+### constructor
 
 ```javascript
-store.get(); // { initial: { state: 42 } }
-store.get('initial'); // { state: 42 }
-store.get('initial.state'); // 42
-```
+import Store from 'true-store';
 
-`set`
-
-```javascript
-store.set('initial', { state: 43 });
-store.set('initial.state', 43);
-store.set('users', []);
-```
-
-`merge`
-
-```javascript
-store.merge({ initial: { state: 43 } });
-store.merge({ newValue: 42 });
-```
-
-`observer`
-
-```javascript
-var observer1 = store.observer(() => {
-    console.log('Any key changed!');
+let store = new Store(); // default state = {}
+let store = new Store({
+    user: { name: 'John Doe' },
 });
-
-var observer2 = store.observer(() => {
-    console.log('Initial state changed!');
-}, 'initial.state');
-
-var observer3 = store.observer(() => {
-    console.log('One of the observed keys changed!');
-}, ['some.key', 'some.other.key']);
-
-observer3.release(); // won't be called anymore
 ```
 
-`transaction`
+### get
+
+```javascript
+store.get(); // { user: {name: 'John Doe'} }
+store.get('user'); // {name: 'John Doe'}
+store.get('user.name'); // 'John Doe'
+```
+
+### set
+
+```javascript
+store.set('user', { name: 'Jane' });
+store.set('user.name', 'Jane');
+store.set('messages', []);
+```
+
+### merge
+
+```javascript
+store.merge({ user: { age: 42 } }); // { user: { name: 'John Doe', age: 42 }}
+store.merge({ messages: ['hello world'] });
+```
+
+### observer
+
+```javascript
+store.observer('user', () => console.log('user changed'));
+store.observer(['user', 'messages'], () => console.log('user or messages changed'));
+store.observer(null, () => console.log('something changed'));
+
+let observer = store.observer('user', () => console.log('user changed'));
+observer.release(); // observer won't run after release
+```
+
+### transaction
 
 ```javascript
 // observers will be called only once, after the transaction ends
@@ -94,22 +96,36 @@ store.transaction(() => {
 ```
 
 
-
 ## Integration with React
 
-To use TrueStore with React, you just need to:
+TrueStore works anywhere, but if you wanna use it with React, you just need to:
 
-* Get values from the store in your `render` method.
+* Get values from the store and use at will, usually in your `render` method.
 * Use an observer to tell the component to update when something changes.
 * Release the observer when the component unmounts.
 
-Example:
+### Example
 
+#### store.js
 ```javascript
-class HelloUser extends React.Component {
+import Store from 'true-store';
+
+let store = new Store({
+    user: { name: 'John Doe' },
+});
+
+export default store;
+```
+
+#### hello.js
+```javascript
+import React from 'react';
+import store from './store';
+
+class Hello extends React.Component {
 
     componentDidMount() {
-        this.observer = store.observer(this.forceUpdate.bind(this));
+        this.observer = store.observer('user.name', this.forceUpdate.bind(this));
     }
 
     componentWillUnmount() {
@@ -117,8 +133,10 @@ class HelloUser extends React.Component {
     }
 
     render() {
-        var name = store.get('user.name');
+        let name = store.get('user.name');
         return <div>Hello {name}</div>;
     }
 }
 ```
+
+And just like that, `Hello {name}` will update when `user.name` does.
