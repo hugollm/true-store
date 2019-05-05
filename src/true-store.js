@@ -6,7 +6,8 @@ class TrueStore {
     constructor(initialState = {}) {
         if (typeof(initialState) !== 'object')
             throw Error('TrueStore: initial state must be an object.');
-        this.stateMap = Immutable.fromJS(initialState);
+        this.initialMap = Immutable.fromJS(initialState);
+        this.stateMap = this.initialMap;
         this.observers = [];
         this.transactionDepth = 0;
     }
@@ -48,6 +49,13 @@ class TrueStore {
             throw Error('TrueStore.merge: state can only merge with an object.');
         let oldStateMap = this.stateMap;
         this.stateMap = this.stateMap.mergeDeep(obj);
+        if (this.transactionDepth === 0)
+            this.notifyObservers(oldStateMap, this.stateMap);
+    }
+
+    reset() {
+        let oldStateMap = this.stateMap;
+        this.stateMap = this.initialMap;
         if (this.transactionDepth === 0)
             this.notifyObservers(oldStateMap, this.stateMap);
     }
