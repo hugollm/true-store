@@ -33,6 +33,16 @@ class TrueStore {
             this.notifyObservers(oldStateMap, this.stateMap);
     }
 
+    del(key) {
+        if (typeof(key) !== 'string')
+            throw Error('TrueStore.del: key must be string.');
+        let pathArray = key.split('.');
+        let oldStateMap = this.stateMap;
+        this.stateMap = this.stateMap.deleteIn(pathArray);
+        if (this.transactionDepth === 0)
+            this.notifyObservers(oldStateMap, this.stateMap);
+    }
+
     merge(obj) {
         if (typeof(obj) !== 'object')
             throw Error('TrueStore.merge: state can only merge with an object.');

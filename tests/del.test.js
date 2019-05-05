@@ -1,0 +1,48 @@
+const TrueStore = require('../src/true-store');
+
+describe('del', () => {
+
+    it('deletes a key from the store', () => {
+        let store = new TrueStore({foo: 42});
+        store.del('foo');
+        expect(store.get('foo')).toBe(undefined);
+    });
+
+    it('can delete nested keys from an object', () => {
+        let store = new TrueStore({foo: {bar: 42}});
+        store.del('foo.bar');
+        expect(store.get()).toEqual({foo: {}});
+    });
+
+    it('can delete index from a nested list', () => {
+        let store = new TrueStore({foo: {bar: ['a', 'b', 'c']}});
+        store.del('foo.bar.1');
+        expect(store.get()).toEqual({foo: {bar: ['a', 'c']}});
+    });
+
+    it('only accepts strings as key argument', () => {
+        let store = new TrueStore({foo: 'bar'});
+        expect(() => {
+            store.del(42);
+        }).toThrow('TrueStore.del: key must be string.');
+    });
+
+    it('trigger observers while outside transactions', () => {
+        let store = new TrueStore({foo: 42});
+        let callback = jest.fn();
+        store.observer('foo', callback);
+        store.del('foo');
+        expect(callback.mock.calls.length).toBe(1);
+    });
+
+    it('does not trigger observers inside a transaction', () => {
+        let store = new TrueStore({foo: 42});
+        let callback = jest.fn();
+        store.observer('foo', callback);
+        store.transaction(() => {
+            store.del('foo');
+            expect(callback.mock.calls.length).toBe(0);
+        });
+        expect(callback.mock.calls.length).toBe(1);
+    });
+});
