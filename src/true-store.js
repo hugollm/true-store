@@ -28,45 +28,41 @@ class TrueStore {
         if (typeof(key) !== 'string')
             throw Error('TrueStore.set: key must be string.');
         let pathArray = key.split('.');
-        let oldStateMap = this.stateMap;
-        this.stateMap = this.stateMap.setIn(pathArray, Immutable.fromJS(value));
-        if (this.transactionDepth === 0)
-            this.notifyObservers(oldStateMap, this.stateMap);
+        let newMap = this.stateMap.setIn(pathArray, Immutable.fromJS(value));
+        this.updateState(newMap);
     }
 
     del(key) {
         if (typeof(key) !== 'string')
             throw Error('TrueStore.del: key must be string.');
         let pathArray = key.split('.');
-        let oldStateMap = this.stateMap;
-        this.stateMap = this.stateMap.deleteIn(pathArray);
-        if (this.transactionDepth === 0)
-            this.notifyObservers(oldStateMap, this.stateMap);
+        this.updateState(this.stateMap.deleteIn(pathArray));
     }
 
     merge(obj) {
         if (typeof(obj) !== 'object')
             throw Error('TrueStore.merge: state can only merge with an object.');
-        let oldStateMap = this.stateMap;
-        this.stateMap = this.stateMap.mergeDeep(obj);
-        if (this.transactionDepth === 0)
-            this.notifyObservers(oldStateMap, this.stateMap);
+        this.updateState(this.stateMap.mergeDeep(obj));
     }
 
     reset() {
-        let oldStateMap = this.stateMap;
-        this.stateMap = this.initialMap;
+        this.updateState(this.initialMap);
+    }
+
+    updateState(newMap) {
+        let oldMap = this.stateMap;
+        this.stateMap = newMap;
         if (this.transactionDepth === 0)
-            this.notifyObservers(oldStateMap, this.stateMap);
+            this.notifyObservers(oldMap, newMap);
     }
 
     transaction(callback) {
-        let oldStateMap = this.stateMap;
+        let oldMap = this.stateMap;
         this.transactionDepth++;
         callback();
         this.transactionDepth--;
         if (this.transactionDepth === 0)
-            this.notifyObservers(oldStateMap, this.stateMap);
+            this.notifyObservers(oldMap, this.stateMap);
     }
 
     observer(keys, callback) {
