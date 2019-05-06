@@ -65,14 +65,13 @@ class TrueStore {
             this.notifyObservers(oldMap, this.stateMap);
     }
 
-    observer(callback, keys = null) {
-        if (keys === null)
-            keys = [];
-        keys = Array.isArray(keys) ? keys : [keys];
-        keys.map((key) => {
-            if (typeof(key) !== 'string')
-                throw Error('TrueStore.observer: keys must be strings.');
-        });
+    observer(callback, keys = []) {
+        let err = 'TrueStore.observer: keys must be an array of strings.';
+        if (!Array.isArray(keys))
+            throw Error(err);
+        for (let i in keys)
+            if (typeof(keys[i]) !== 'string')
+                throw Error(err);
         let observer = new TrueStoreObserver(this, keys, callback);
         this.observers.push(observer);
         return observer;

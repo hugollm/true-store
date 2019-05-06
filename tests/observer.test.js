@@ -21,7 +21,7 @@ describe('observer', () => {
     it('allows a callback to observe a specific key in the store', () => {
         let store = new TrueStore({foo: 42, bar: 42});
         let callback = jest.fn();
-        store.observer(callback, 'foo');
+        store.observer(callback, ['foo']);
         store.set('foo', 43);
         store.set('bar', 43);
         expect(callback.mock.calls.length).toBe(1);
@@ -40,7 +40,7 @@ describe('observer', () => {
     it('allows a callback to observe a nested key in the store', () => {
         let store = new TrueStore({foo: {foo: 42, bar: 42}});
         let callback = jest.fn();
-        store.observer(callback, 'foo.bar');
+        store.observer(callback, ['foo.bar']);
         store.set('foo.foo', 43);
         store.set('foo.bar', 43);
         expect(callback.mock.calls.length).toBe(1);
@@ -71,13 +71,20 @@ describe('observer', () => {
         let store = new TrueStore({foo: 42});
         expect(() => {
             store.observer(jest.fn(), 42);
-        }).toThrow('TrueStore.observer: keys must be strings.');
+        }).toThrow('TrueStore.observer: keys must be an array of strings.');
     });
 
     it('throws exception if one of the keys is invalid', () => {
         let store = new TrueStore({foo: 42});
         expect(() => {
             store.observer(jest.fn(), ['foo', 'bar', 42]);
-        }).toThrow('TrueStore.observer: keys must be strings.');
+        }).toThrow('TrueStore.observer: keys must be an array of strings.');
+    });
+
+    it('throws exception if the keys argument is not an array', () => {
+        let store = new TrueStore({foo: 42});
+        expect(() => {
+            store.observer(jest.fn(), 'foo');
+        }).toThrow('TrueStore.observer: keys must be an array of strings.');
     });
 });

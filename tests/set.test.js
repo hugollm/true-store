@@ -24,7 +24,7 @@ describe('set', () => {
     it('triggers data listeners', () => {
         let store = new TrueStore({foo: null});
         callback = jest.fn();
-        store.observer(callback, 'foo');
+        store.observer(callback, ['foo']);
         store.set('foo', 'bar');
         expect(callback).toHaveBeenCalled();
     });
@@ -32,7 +32,7 @@ describe('set', () => {
     it('triggers data listeners from nested changes', () => {
         let store = new TrueStore({foo: {bar: null}});
         callback = jest.fn();
-        store.observer(callback, 'foo');
+        store.observer(callback, ['foo']);
         store.set('foo.bar', 42);
         expect(callback).toHaveBeenCalled();
     });

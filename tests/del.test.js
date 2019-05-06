@@ -30,7 +30,7 @@ describe('del', () => {
     it('trigger observers while outside transactions', () => {
         let store = new TrueStore({foo: 42});
         let callback = jest.fn();
-        store.observer(callback, 'foo');
+        store.observer(callback, ['foo']);
         store.del('foo');
         expect(callback.mock.calls.length).toBe(1);
     });
@@ -38,7 +38,7 @@ describe('del', () => {
     it('does not trigger observers inside a transaction', () => {
         let store = new TrueStore({foo: 42});
         let callback = jest.fn();
-        store.observer(callback, 'foo');
+        store.observer(callback, ['foo']);
         store.transaction(() => {
             store.del('foo');
             expect(callback.mock.calls.length).toBe(0);
