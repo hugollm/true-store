@@ -65,7 +65,7 @@ class TrueStore {
             this.notifyObservers(oldMap, this.stateMap);
     }
 
-    observer(keys, callback) {
+    observer(callback, keys = null) {
         if (keys === null)
             keys = [];
         keys = Array.isArray(keys) ? keys : [keys];

@@ -14,7 +14,7 @@ describe('reset', () => {
         let store = new TrueStore({foo: 42});
         store.set('foo', 43);
         let callback = jest.fn();
-        store.observer('foo', callback);
+        store.observer(callback, 'foo');
         store.reset();
         expect(callback.mock.calls.length).toBe(1);
     });
@@ -22,7 +22,7 @@ describe('reset', () => {
     it('does not trigger observers if nothing changes', () => {
         let store = new TrueStore({foo: 42});
         let callback = jest.fn();
-        store.observer('foo', callback);
+        store.observer(callback, 'foo');
         store.reset();
         expect(callback.mock.calls.length).toBe(0);
     });
@@ -31,7 +31,7 @@ describe('reset', () => {
         let store = new TrueStore({foo: 42});
         store.set('foo', 43);
         let callback = jest.fn();
-        store.observer('foo', callback);
+        store.observer(callback, 'foo');
         store.transaction(() => {
             store.reset();
             expect(callback.mock.calls.length).toBe(0);
