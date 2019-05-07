@@ -10,6 +10,7 @@ class TrueStore {
         this.stateMap = this.initialMap;
         this.observers = [];
         this.transactionDepth = 0;
+        TrueStore.stores.push(this);
     }
 
     get(key = null) {
@@ -82,6 +83,13 @@ class TrueStore {
             observer.callIfNeeded(oldMap, newMap);
         });
     }
+}
+
+TrueStore.stores = [];
+
+TrueStore.resetAll = function() {
+    for (let i in TrueStore.stores)
+        TrueStore.stores[i].reset();
 }
 
 
