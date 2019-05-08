@@ -1,23 +1,24 @@
 const Immutable = require('immutable');
+const Observer = require('./observer');
 
 
-class TrueStore {
+class Store {
 
     constructor(initialState = {}) {
         if (typeof(initialState) !== 'object')
-            throw Error('TrueStore: initial state must be an object.');
+            throw Error('Store: initial state must be an object.');
         this.initialMap = Immutable.fromJS(initialState);
         this.stateMap = this.initialMap;
         this.observers = [];
         this.transactionDepth = 0;
-        TrueStore.stores.push(this);
+        Store.instances.push(this);
     }
 
     get(key = null) {
         if (key === null)
             return this.stateMap.toJS();
         if (typeof(key) !== 'string')
-            throw Error('TrueStore.get: key must be string.');
+            throw Error('Store.get: key must be string.');
         let pathArray = key.split('.');
         let value = this.stateMap.getIn(pathArray);
         if (value !== null && typeof(value) == 'object' && typeof(value.toJS) == 'function')
@@ -27,7 +28,7 @@ class TrueStore {
 
     set(key, value) {
         if (typeof(key) !== 'string')
-            throw Error('TrueStore.set: key must be string.');
+            throw Error('Store.set: key must be string.');
         let pathArray = key.split('.');
         let newMap = this.stateMap.setIn(pathArray, Immutable.fromJS(value));
         this.updateState(newMap);
@@ -35,14 +36,14 @@ class TrueStore {
 
     del(key) {
         if (typeof(key) !== 'string')
-            throw Error('TrueStore.del: key must be string.');
+            throw Error('Store.del: key must be string.');
         let pathArray = key.split('.');
         this.updateState(this.stateMap.deleteIn(pathArray));
     }
 
     merge(obj) {
         if (typeof(obj) !== 'object')
-            throw Error('TrueStore.merge: state can only merge with an object.');
+            throw Error('Store.merge: state can only merge with an object.');
         this.updateState(this.stateMap.mergeDeep(obj));
     }
 
@@ -67,13 +68,13 @@ class TrueStore {
     }
 
     observer(callback, keys = []) {
-        let err = 'TrueStore.observer: keys must be an array of strings.';
+        let err = 'Store.observer: keys must be an array of strings.';
         if (!Array.isArray(keys))
             throw Error(err);
         for (let i in keys)
             if (typeof(keys[i]) !== 'string')
                 throw Error(err);
-        let observer = new TrueStoreObserver(this, keys, callback);
+        let observer = new Observer(this, keys, callback);
         this.observers.push(observer);
         return observer;
     }
@@ -85,44 +86,12 @@ class TrueStore {
     }
 }
 
-TrueStore.stores = [];
+Store.instances = [];
 
-TrueStore.resetAll = function() {
-    for (let i in TrueStore.stores)
-        TrueStore.stores[i].reset();
+Store.resetAll = function() {
+    for (let i in Store.instances)
+        Store.instances[i].reset();
 }
 
 
-class TrueStoreObserver {
-
-    constructor(store, keys, callback) {
-        this.store = store;
-        this.keys = keys;
-        this.callback = callback;
-    }
-
-    release() {
-        let index = this.store.observers.indexOf(this);
-        this.store.observers.splice(index, 1);
-    }
-
-    callIfNeeded(oldMap, newMap) {
-        if (this.keys.length === 0 && !Immutable.is(oldMap, newMap))
-            this.callback();
-        if (this.keys.length > 0)
-            this.keys.map(key => {
-                if (this.stateKeyChanged(key, oldMap, newMap))
-                    this.callback();
-            });
-    }
-
-    stateKeyChanged(key, oldMap, newMap) {
-        let pathArray = key.split('.');
-        let oldValue = oldMap.getIn(pathArray);
-        let newValue = newMap.getIn(pathArray);
-        return !Immutable.is(oldValue, newValue);
-    }
-}
-
-
-module.exports = TrueStore;
+module.exports = Store;

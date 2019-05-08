@@ -1,9 +1,9 @@
-const TrueStore = require('../src/true-store');
+const Store = require('../src/store');
 
 describe('reset', () => {
 
     it('returns store to initial state', () => {
-        let store = new TrueStore({foo: 42, bar: {biz: 'foo'}});
+        let store = new Store({foo: 42, bar: {biz: 'foo'}});
         store.set('foo', 43);
         store.del('bar');
         store.reset();
@@ -11,7 +11,7 @@ describe('reset', () => {
     });
 
     it('trigger observers while outside transactions', () => {
-        let store = new TrueStore({foo: 42});
+        let store = new Store({foo: 42});
         store.set('foo', 43);
         let callback = jest.fn();
         store.observer(callback, ['foo']);
@@ -20,7 +20,7 @@ describe('reset', () => {
     });
 
     it('does not trigger observers if nothing changes', () => {
-        let store = new TrueStore({foo: 42});
+        let store = new Store({foo: 42});
         let callback = jest.fn();
         store.observer(callback, ['foo']);
         store.reset();
@@ -28,7 +28,7 @@ describe('reset', () => {
     });
 
     it('does not trigger observers inside transactions', () => {
-        let store = new TrueStore({foo: 42});
+        let store = new Store({foo: 42});
         store.set('foo', 43);
         let callback = jest.fn();
         store.observer(callback, ['foo']);

@@ -1,27 +1,27 @@
-const TrueStore = require('../src/true-store');
+const Store = require('../src/store');
 
 describe('get', () => {
 
     it('returns the entire state if called without arguments', () => {
-        let store = new TrueStore({foo: 42});
+        let store = new Store({foo: 42});
         let state = store.get();
         expect(state).toEqual({foo: 42});
     });
 
     it('can return a portion of the state', () => {
-        let store = new TrueStore({foo: 42});
+        let store = new Store({foo: 42});
         let foo = store.get('foo');
         expect(foo).toBe(42);
     });
 
     it('returns undefined if unknown key is requested', () => {
-        let store = new TrueStore({foo: 42});
+        let store = new Store({foo: 42});
         let bar = store.get('bar');
         expect(bar).toBe(undefined);
     });
 
     it('can return nested data', () => {
-        let store = new TrueStore({
+        let store = new Store({
             login: {
                 loading: false,
                 user: {id: 1, name: 'John'},
@@ -32,7 +32,7 @@ describe('get', () => {
     });
 
     it('can return null data', () => {
-        let store = new TrueStore({
+        let store = new Store({
             user: null,
         });
         let user = store.get('user');
@@ -40,7 +40,7 @@ describe('get', () => {
     });
 
     it('can return false data', () => {
-        let store = new TrueStore({
+        let store = new Store({
             logged: false,
         });
         let logged = store.get('logged');
@@ -48,7 +48,7 @@ describe('get', () => {
     });
 
     it('can return undefined data', () => {
-        let store = new TrueStore({
+        let store = new Store({
             und: undefined,
         });
         let und = store.get('und');
@@ -56,7 +56,7 @@ describe('get', () => {
     });
 
     it('return plain objects from state', () => {
-        let store = new TrueStore({
+        let store = new Store({
             user: {id: 1, name: 'John'},
         });
         let user = store.get('user');
@@ -64,19 +64,19 @@ describe('get', () => {
     });
 
     it('returns undefined for keys not present in the store', () => {
-        let store = new TrueStore();
+        let store = new Store();
         expect(store.get('und')).toBe(undefined);
     });
 
     it('returns undefined for nested keys not present in the store', () => {
-        let store = new TrueStore();
+        let store = new Store();
         expect(store.get('und.nest.nest')).toBe(undefined);
     });
 
     it('throws error if called with invalid key', () => {
-        let store = new TrueStore();
+        let store = new Store();
         expect(() => {
             store.get(42);
-        }).toThrow('TrueStore.get: key must be string.');
+        }).toThrow('Store.get: key must be string.');
     });
 });

@@ -1,9 +1,9 @@
-const TrueStore = require('../src/true-store');
+const Store = require('../src/store');
 
 describe('transaction', () => {
 
     it('prevents listeners from running multiple times inside the transaction', () => {
-        let store = new TrueStore({foo: 42});
+        let store = new Store({foo: 42});
         callback = jest.fn();
         store.observer(callback, ['foo']);
         store.transaction(() => {
@@ -15,7 +15,7 @@ describe('transaction', () => {
     });
 
     it('prevents listener calls inside nest transactions', () => {
-        let store = new TrueStore({foo: 42});
+        let store = new Store({foo: 42});
         callback = jest.fn();
         store.observer(callback, ['foo']);
         store.transaction(() => {
