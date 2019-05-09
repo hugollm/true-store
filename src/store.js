@@ -14,6 +14,10 @@ class Store {
         Store.instances.push(this);
     }
 
+    inDebug() {
+        return Store._debug;
+    }
+
     get(key = null) {
         if (key === null)
             return this.stateMap.toJS();
@@ -86,7 +90,12 @@ class Store {
     }
 }
 
+Store._debug = false;
 Store.instances = [];
+
+Store.debug = function(bool) {
+    Store._debug = bool;
+}
 
 Store.resetAll = function() {
     for (let i in Store.instances)
