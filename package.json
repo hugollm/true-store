@@ -15,7 +15,8 @@
     "scripts": {
         "test": "jest --coverage",
         "watch-tests": "jest --coverage --watchAll",
-        "coveralls": "cat coverage/lcov.info | coveralls"
+        "coveralls": "cat coverage/lcov.info | coveralls",
+        "list-package-files": "npm pack && tar -xvzf *.tgz && rm -rf package *.tgz"
     },
     "dependencies": {
         "immutable": "3.8.2"
