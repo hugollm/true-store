@@ -66,11 +66,15 @@ store.merge({ messages: ['hello world'] });
 ### observer
 
 ```javascript
-store.observer('user', () => console.log('user changed'));
-store.observer(['user', 'messages'], () => console.log('user or messages changed'));
-store.observer(null, () => console.log('something changed'));
+function somethingChanged() {}
+function userChanged() {}
+function userOrMessagesChanged() {}
 
-let observer = store.observer('user', () => console.log('user changed'));
+store.observer(somethingChanged);
+store.observer(userChanged, ['user']);
+store.observer(userOrMessagesChanged, ['user', 'messages']);
+
+let observer = store.observer(somethingChanged);
 observer.release(); // observer won't run after release
 ```
 
@@ -98,11 +102,12 @@ store.transaction(() => {
 
 ## Integration with React
 
-TrueStore works anywhere, but if you wanna use it with React, you just need to:
+TrueStore works anywhere. If you wanna use it with React, you just need to:
 
 * Get values from the store and use at will, usually in your `render` method.
 * Use an observer to tell the component to update when something changes.
 * Release the observer when the component unmounts.
+
 
 ### Example
 
@@ -110,22 +115,33 @@ TrueStore works anywhere, but if you wanna use it with React, you just need to:
 ```javascript
 import Store from 'true-store';
 
-let store = new Store({
-    user: { name: 'John Doe' },
+export default new Store({
+    count: 0,
 });
-
-export default store;
 ```
 
-#### hello.js
+#### actions.js
 ```javascript
-import React from 'react';
 import store from './store';
 
-class Hello extends React.Component {
+export function increment() {
+    let count = store.get('count');
+    store.set('count', count + 1);
+}
+```
+
+#### counter.js
+```javascript
+import React from 'react';
+
+import store from './store';
+import { increment } from './actions';
+
+
+class Counter extends React.Component {
 
     componentDidMount() {
-        this.observer = store.observer('user.name', this.forceUpdate.bind(this));
+        this.observer = store.observer(this.forceUpdate.bind(this));
     }
 
     componentWillUnmount() {
@@ -133,10 +149,9 @@ class Hello extends React.Component {
     }
 
     render() {
-        let name = store.get('user.name');
-        return <div>Hello {name}</div>;
+        return <button onClick={increment}>
+            {store.get('count')}
+        </button>;
     }
 }
 ```
-
-And just like that, `Hello {name}` will update when `user.name` does.
