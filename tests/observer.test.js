@@ -87,4 +87,12 @@ describe('observer', () => {
             store.observer(jest.fn(), 'foo');
         }).toThrow('Store.observer: keys must be an array of strings.');
     });
+
+    it('does not trigger repeatedly if multiple observed keys changed', () => {
+        let store = new Store({foo: 1, bar: 2});
+        let callback = jest.fn();
+        store.observer(callback, ['foo', 'bar']);
+        store.merge({foo: 3, bar: 4});
+        expect(callback.mock.calls.length).toBe(1);
+    });
 });

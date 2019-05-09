@@ -15,22 +15,17 @@ class Observer {
     }
 
     callIfNeeded(oldMap, newMap) {
-        if (this.keys.length === 0 && !Immutable.is(oldMap, newMap)) {
-            this.logTrigger('*');
-            this.callback();
-        }
-        if (this.keys.length > 0)
-            this.keys.map(key => {
-                if (this.stateKeyChanged(key, oldMap, newMap)) {
-                    this.logTrigger(key);
-                    this.callback();
-                }
-            });
+        if (this.keys.length === 0 && !Immutable.is(oldMap, newMap))
+            return this.trigger('*');
+        for (let i in this.keys)
+            if (this.stateKeyChanged(this.keys[i], oldMap, newMap))
+                return this.trigger(this.keys[i]);
     }
 
-    logTrigger(key) {
+    trigger(key) {
         if (this.store.inDebug())
             console.debug('[store] observer triggered (' + key + ')', this.store.get());
+        this.callback();
     }
 
     stateKeyChanged(key, oldMap, newMap) {
