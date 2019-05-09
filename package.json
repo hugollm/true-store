@@ -18,11 +18,11 @@
         "coveralls": "cat coverage/lcov.info | coveralls"
     },
     "dependencies": {
-        "immutable": "^3.8.2"
+        "immutable": "3.8.2"
     },
     "devDependencies": {
-        "coveralls": "^3.0.3",
-        "jest": "^24.1.0"
+        "coveralls": "*",
+        "jest": "*"
     },
     "jest": {
         "testEnvironment": "node",
