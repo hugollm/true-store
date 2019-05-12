@@ -44,4 +44,29 @@ describe('debug', () => {
         store.set('foo', 2);
         expect(global.console.debug).toBeCalledWith('[store] observer triggered (*)', store.get());
     });
+
+    it('logs a warning if an observer is triggered multiple times too fast', () => {
+        global.console.warn = jest.fn();
+        Store.debug(true);
+        let store = new Store({foo: 1});
+        store.observer(jest.fn());
+        store.set('foo', 2);
+        store.set('foo', 3);
+        expect(global.console.warn).toBeCalledWith('[store] observer triggered multiple times too fast', store.get());
+    });
+
+    it('does not log a warning if an observer is triggered multiple not that fast', async () => {
+        global.console.warn = jest.fn();
+        Store.debug(true);
+        let store = new Store({foo: 1});
+        store.observer(jest.fn());
+        store.set('foo', 2);
+        await new Promise(resolve => {
+            setTimeout(() => {
+                store.set('foo', 3);
+                resolve();
+            }, 11);
+        });
+        expect(global.console.warn).not.toBeCalled();
+    });
 });

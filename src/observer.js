@@ -7,6 +7,7 @@ class Observer {
         this.store = store;
         this.keys = keys;
         this.callback = callback;
+        this.lastTrigger = null;
     }
 
     release() {
@@ -23,9 +24,21 @@ class Observer {
     }
 
     trigger(key) {
-        if (this.store.inDebug())
+        if (this.store.inDebug()) {
             console.debug('[store] observer triggered (' + key + ')', this.store.get());
+            this.detectMultipleCalls();
+        }
         this.callback();
+    }
+
+    detectMultipleCalls() {
+        let now = new Date();
+        if (this.lastTrigger) {
+            let msDiff = now - this.lastTrigger;
+            if (msDiff <= 10)
+                console.warn('[store] observer triggered multiple times too fast', this.store.get());
+        }
+        this.lastTrigger = now;
     }
 
     stateKeyChanged(key, oldMap, newMap) {
