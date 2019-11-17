@@ -1,6 +1,6 @@
 {
     "name": "true-store",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "description": "Dead simple state management for javascript applications.",
     "license": "MIT",
     "author": {
